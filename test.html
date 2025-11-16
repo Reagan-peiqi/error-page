@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>无法访问此网站 — 错误</title>
+  <style>
+    :root{
+      --bg:#f6f7f9;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#2563eb;
+      --danger:#ef4444;
+      --radius:12px;
+      --shadow:0 8px 24px rgba(16,24,40,0.08);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b1220;
+        --card:#0f1724;
+        --muted:#9ca3af;
+        --accent:#60a5fa;
+        --danger:#f87171;
+        --shadow: none;
+      }
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'PingFang SC','Noto Sans CJK SC',"Helvetica Neue",Arial}
+    body{display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--muted);padding:24px}
+
+    .card{background:var(--card);width:min(760px,96%);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px;display:grid;grid-template-columns:84px 1fr;gap:20px;align-items:center}
+
+    .icon{width:84px;height:84px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:38px;background:linear-gradient(180deg,rgba(37,99,235,0.12),rgba(37,99,235,0.03));color:var(--accent)}
+
+    h1{margin:0;font-size:20px;color:inherit}
+    .code{font-weight:700;color:var(--danger);margin-top:4px}
+    p.lead{margin:8px 0 16px;color:var(--muted);line-height:1.45}
+
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{padding:10px 14px;border-radius:8px;border:1px solid transparent;background:transparent;color:inherit;cursor:pointer;font-weight:600}
+    .btn.primary{background:var(--accent);color:white;border-color:transparent}
+    .btn.ghost{background:transparent;border:1px solid rgba(100,116,139,0.12)}
+
+    .details{margin-top:14px;border-radius:8px;background:rgba(0,0,0,0.02);padding:12px;font-family:monospace;font-size:13px;color:var(--muted);display:none}
+    .details.show{display:block}
+
+    .small{font-size:13px;color:var(--muted)}
+
+    /* responsive */
+    @media (max-width:560px){
+      .card{grid-template-columns:64px 1fr;padding:18px}
+      .icon{width:64px;height:64px;font-size:30px}
+      h1{font-size:18px}
+    }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="title">
+    <div class="icon" aria-hidden="true">⚠️</div>
+    <div>
+      <h1 id="title">无法访问此网站</h1>
+      <div class="code" id="errcode">ERR_CONNECTION_REFUSED</div>
+      <p class="lead">浏览器无法连接到服务器。可能的原因：网络断开、服务器不可用或目标地址被阻止。</p>
+
+      <div class="actions" role="group" aria-label="操作">
+        <button class="btn primary" id="reloadBtn">重新加载</button>
+        <button class="btn ghost" id="homeBtn">返回首页</button>
+        <button class="btn" id="detailsBtn" aria-expanded="false">显示详细信息</button>
+      </div>
+
+      <div id="details" class="details" aria-hidden="true">
+        <div>URL: <span id="url">https://example.com/</span></div>
+        <div>时间: <span id="time"></span></div>
+        <div style="margin-top:8px">提示：检查网络、代理或防火墙设置；尝试在终端运行 <code>ping</code> 或 <code>traceroute</code> 来排查。</div>
+      </div>
+
+      <p class="small" style="margin-top:12px">如果问题持续存在，请联系网站管理员或稍后重试。</p>
+    </div>
+  </main>
+
+  <script>
+    // 用最小 JS 提供交互
+    (function(){
+      const reloadBtn = document.getElementById('reloadBtn');
+      const homeBtn = document.getElementById('homeBtn');
+      const detailsBtn = document.getElementById('detailsBtn');
+      const details = document.getElementById('details');
+      const timeEl = document.getElementById('time');
+      const urlEl = document.getElementById('url');
+      const codeEl = document.getElementById('errcode');
+
+      // 填充时间
+      timeEl.textContent = new Date().toLocaleString();
+
+      // 如果页面被当作错误页嵌入，可从 query 中读取信息（可选）
+      try{
+        const params = new URLSearchParams(location.search);
+        const u = params.get('url');
+        const c = params.get('code');
+        if(u) urlEl.textContent = u;
+        if(c) codeEl.textContent = c;
+      }catch(e){}
+
+      reloadBtn.addEventListener('click', ()=>{
+        // 尝试强制刷新
+        location.reload();
+      });
+
+      homeBtn.addEventListener('click', ()=>{
+        // 返回一个安全页或根目录
+        location.href = '/';
+      });
+
+      detailsBtn.addEventListener('click', ()=>{
+        const showing = details.classList.toggle('show');
+        detailsBtn.setAttribute('aria-expanded', showing);
+        details.setAttribute('aria-hidden', !showing);
+        detailsBtn.textContent = showing ? '隐藏详细信息' : '显示详细信息';
+      });
+    })();
+  </script>
+</body>
+</html>
